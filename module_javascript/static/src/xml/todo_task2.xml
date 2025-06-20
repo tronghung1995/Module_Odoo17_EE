@@ -1,0 +1,13 @@
+<template xml:space="preserve">
+
+    <t t-name="module_javascript.TodoTask2" owl="1">
+        <div class="o_list_view o_sale_order o_view_controller o_action">
+
+            <div class="o_content">
+                <ChartComponent/>
+            </div>
+
+        </div>
+    </t>
+
+</template>

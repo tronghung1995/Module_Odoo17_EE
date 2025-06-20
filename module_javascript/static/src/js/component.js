@@ -3,6 +3,7 @@
 import { useService } from '@web/core/utils/hooks';
 import { registry } from '@web/core/registry';
 import { UserSelector } from "./userselector";
+import { ChartComponent } from "./chart_component";
 const { Component, useState, onWillStart, useRef } = owl;
 
 export class TodoTask extends Component {
@@ -216,7 +217,6 @@ export class TodoTask extends Component {
 TodoTask.template = 'module_javascript.TodoTask';
 registry.category("actions").add("module_javascript.action_todo_task", TodoTask);
 
-
 export class TodoTask1 extends TodoTask {
     static template = "module_javascript.TodoTask1";
     static components = { UserSelector };
@@ -224,15 +224,36 @@ export class TodoTask1 extends TodoTask {
     setup() {
         super.setup();
 
+        this.state = useState({...this.state, show_filter: false });
+
         this.userSelect = useRef("userSelect");
 
         this.selectedUserId = null;
         this.onChangeUser = (userId) => {
-            console.log("Selected User ID:", userId);
             this.selectedUserId = userId;
         };
     }
+
+    // override hàm loadTasks để thêm điều kiện khi filter
+    async loadTasks() {
+        // Tạo domain mới
+        const baseDomain = [];
+
+        // Thêm điều kiện theo user
+        if (this.selectedUserId) {
+            baseDomain.push(['create_uid', '=', this.selectedUserId]);
+        }
+        else {
+            baseDomain.push(['create_uid', '!=', false]);
+        }
     
+        this.domain = baseDomain;
+
+        // Gọi về class cha để chạy logic chuẩn
+        await super.loadTasks();
+
+    }
+
     async onSearch() {
         const userId = this.selectedUserId;
         const domain = userId ? [["create_uid", "=", userId]] : [];
@@ -240,11 +261,28 @@ export class TodoTask1 extends TodoTask {
     
         this.state.taskList = await this.orm.searchRead("todo.task", domain, fields);
     
+        await this.loadTasks();
         // Optional: Reset sorting state nếu cần
         this.sortField = null;
         this.sortAsc = true;
     }
 
+    showFilter() {
+        this.state.show_filter = !this.state.show_filter;
+    }
+
 }
 
 registry.category("actions").add("module_javascript.action_todo_task1", TodoTask1);
+
+export class TodoTask2 extends TodoTask {
+    static template = "module_javascript.TodoTask2";
+    static components = { ChartComponent };
+
+    setup() {
+        super.setup();
+    }
+
+}
+
+registry.category("actions").add("module_javascript.action_todo_task_chart", TodoTask2);

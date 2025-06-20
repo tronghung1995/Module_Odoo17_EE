@@ -1,0 +1,121 @@
+<template xml:space="preserve">
+
+    <t t-name="module_javascript.TodoTask1" owl="1">
+        <div class="o_list_view o_sale_order o_view_controller o_action">
+
+            <div id="navbar_header" class="o_control_panel_main row g-0 mb-0" style="border-bottom: 1px solid #714B67;">
+            
+                <div id="header" class="o_control_panel_main row g-0 mb-3">
+                    <!-- Center: Search (8/12) -->
+                    <div class="col-12 col-lg-8 d-flex justify-content-left" style="min-width:250px; padding-left: 15px;">
+                        <div class="input-group w-100" style="max-width:400px;">
+                            <button class="btn btn-primary" t-on-click="showFilter">
+                                <t t-if="state.show_filter">Hide Filter</t>
+                                <t t-else="!state.show_filter">Filter</t>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right: Pagination -->
+                    <div class="col-12 col-lg-4 d-flex justify-content-end" style="min-width:200px;padding-right:15px;">
+                        <nav aria-label="Page navigation example" class="mb-2">
+                            <ul class="pagination mb-0">
+                                <li class="page-item me-2 d-flex align-items-center">
+                                    <input type="number" min="1"
+                                        t-att-value="state.pageStartInput"
+                                        style="width: 50px;"
+                                        t-on-input="onPageStartInputChange"
+                                        t-on-keydown="onPageRangeKeydown" />
+                                    <span> -</span>
+                                    <input type="number" min="1"
+                                        t-att-value="state.pageEndInput"
+                                        style="width: 50px; margin: 0 5px;"
+                                        t-on-input="onPageEndInputChange"
+                                        t-on-keydown="onPageRangeKeydown" />
+                                    <span t-esc="'/ ' + state.totalRecords"></span>
+                                </li>
+
+                                <li class="page-item" style="margin-right: 2px;">
+                                    <a class="oi oi-chevron-left btn btn-secondary o_pager_previous px-2 rounded-start"
+                                        aria-label="Previous" data-tooltip="Previous" tabindex="-1"
+                                        t-on-click.prevent="goPrevPage"></a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="oi oi-chevron-right btn btn-secondary o_pager_next px-2 rounded-end"
+                                        aria-label="Next" data-tooltip="Next" tabindex="-1"
+                                        t-on-click="goNextPage"></a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+                <div t-attf-class="#{state.show_filter ? '' : 'd-none'}">
+                    <div id="header_search" class="o_control_panel_main row g-0 mb-0">
+                    <div class="col-12 col-lg-8 d-flex justify-content-start" style="min-width:250px; margin-left:10%;">
+                        <div class="input-group w-100" style="max-width:400px;">
+                            <div class="mb-3 row">
+                                <UserSelector onChangeUser.bind="onChangeUser"/>
+                                <button class="btn btn-primary" 
+                                    t-on-click="onSearch" 
+                                    style="width: 50%; display: block; margin-left: auto;">Search</button>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="o_content">
+                <div class="table" style="max-height: 80vh;">
+                    <table class="o_list_table table table-sm table-hover table-striped table-bordered mb-0"
+                        style="min-width: 720px; table-layout: auto; white-space: nowrap;">
+
+                        <thead>
+                            <tr>
+                                <!-- Name -->
+                                <th class="text-nowrap" style="color: #ffffff; background-color: #714B67; cursor: pointer; position: sticky; top: 0; z-index: 2;"
+                                    t-on-click="() => this.sortTasksBy('name')">
+                                    Name
+                                    <t t-if="this.sortField === 'name'">
+                                        <i t-att-class="'fa ' + (this.sortAsc ? 'fa-sort-up' : 'fa-sort-down')" style="margin-left: 5px;"></i>
+                                    </t>
+                                </th>
+
+                                <!-- Color -->
+                                <th class="text-nowrap" style="color: #ffffff; background-color: #714B67; position: sticky; top: 0; z-index: 2;">Color</th>
+
+                                <!-- Description -->
+                                <th class="text-nowrap" style="color: #ffffff; background-color: #714B67; cursor: pointer; position: sticky; top: 0; z-index: 2;"
+                                    t-on-click="() => this.sortTasksBy('description')">
+                                    Description
+                                    <t t-if="this.sortField === 'description'">
+                                        <i t-att-class="'fa ' + (this.sortAsc ? 'fa-sort-up' : 'fa-sort-down')" style="margin-left: 5px;"></i>
+                                    </t>
+                                </th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr t-foreach="state.taskList" t-as="task" t-key="task.id">
+                                <td>
+                                    <span t-esc="task.name" />
+                                </td>
+                                <td>
+                                    <input type='color' class="form-control form-control-color" id="exampleColorInput" t-att-value="task.color" t-att-disabled="true"/>
+                                </td>
+                                <td>
+                                    <span t-esc="task.description" />
+                                </td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </t>
+
+</template>
