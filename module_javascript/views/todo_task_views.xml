@@ -47,6 +47,12 @@
         <field name="tag">module_javascript.action_todo_task1</field>
     </record>
 
+    <!-- Action Chart -->
+    <record id="action_todo_task_chart" model="ir.actions.client">
+        <field name="name">Todo Task Chart</field>
+        <field name="tag">module_javascript.action_todo_task_chart</field>
+    </record>
+
     <!-- Menu (Tùy chọn) -->
     <menuitem id="menu_owl_javascript" 
         name="OWL (Javascript)" 
@@ -61,5 +67,10 @@
         parent="menu_owl_javascript"
         name="Todo Tasks Query" 
         action="action_todo_task1"/>
+
+    <menuitem id="menu_owl_javascript_child3"
+        parent="menu_owl_javascript"
+        name="Todo Tasks Chart" 
+        action="action_todo_task_chart"/>
 
 </odoo>
