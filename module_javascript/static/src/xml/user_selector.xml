@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates xml:space="preserve">
+
+    <t t-name="module_javascript.UserSelector" owl="1">
+        <div class="p-3 d-flex align-items-center gap-2">
+            <label class="form-label mb-0" style="min-width: 100px;">Select User</label>
+            <select ref="userSelect" t-on-change="onUserChange" class="form-control">
+                <option value=""></option>
+                <t t-foreach="state.users" t-as="user" t-key="user.id">
+                    <option t-att-value="user.id" t-att-selected="user.id === state.selectedUserId">
+                        <t t-esc="user.name"/>
+                    </option>
+                </t>
+            </select>
+        </div>
+    </t>
+
+</templates>

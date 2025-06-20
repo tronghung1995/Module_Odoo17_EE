@@ -1,0 +1,294 @@
+<template xml:space="preserve">
+    <t t-name="module_javascript.TodoTask" owl="1">
+        <div class="o_list_view o_sale_order o_view_controller o_action">
+
+            <div class="o_control_panel_main d-flex flex-wrap flex-lg-nowrap justify-content-between align-items-lg-start gap-3 flex-grow-1"
+            style="margin-bottom: 10px;">
+
+                <!-- Left: New button -->
+                <div class="d-flex justify-content-start flex-grow-1 flex-lg-grow-0" style="min-width: 200px; padding-left: 15px;">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" t-on-click="addTask">New</button>
+                </div>
+
+                <!-- Center: Search -->
+                <div class="d-flex justify-content-center flex-grow-1" style="min-width: 250px;">
+                    <div class="input-group" style="max-width: 400px; width: 100%;">
+                        <input class="form-control" type="text" placeholder="Search here..." t-ref="search-input" t-on-keyup="searchTasks"/>
+                        <button class="btn btn-primary" t-on-click="searchTasks">Search</button>
+                    </div>
+                </div>
+
+                <!-- Right: Pagination -->
+                <div class="d-flex justify-content-end flex-grow-1 flex-lg-grow-0" style="min-width: 200px; padding-right: 15px;">
+                    <nav aria-label="Page navigation example" class="mb-2">
+                        <ul class="pagination mb-0">
+                            <li class="page-item me-2 d-flex align-items-center">
+                                <input type="number" min="1"
+                                    t-att-value="state.pageStartInput"
+                                    style="width: 50px;"
+                                    t-on-input="onPageStartInputChange"
+                                    t-on-keydown="onPageRangeKeydown" />
+                                <span>-</span>
+                                <input type="number" min="1"
+                                    t-att-value="state.pageEndInput"
+                                    style="width: 50px; margin: 0 5px;"
+                                    t-on-input="onPageEndInputChange"
+                                    t-on-keydown="onPageRangeKeydown" />
+                                <span t-esc="'/ ' + state.totalRecords"></span>
+                            </li>
+
+                            <li class="page-item" style="margin-right: 2px;">
+                                <a class="oi oi-chevron-left btn btn-secondary o_pager_previous px-2 rounded-start"
+                                    aria-label="Previous" data-tooltip="Previous" tabindex="-1"
+                                    t-on-click.prevent="goPrevPage"></a>
+                            </li>
+                            <li class="page-item">
+                                <a class="oi oi-chevron-right btn btn-secondary o_pager_next px-2 rounded-end"
+                                    aria-label="Next" data-tooltip="Next" tabindex="-1"
+                                    t-on-click="goNextPage"></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <div class="o_content">
+                <div class="table-responsive" style="max-height: 80vh; overflow-y: auto;">
+                    <table class="o_list_table table table-sm table-hover table-striped table-bordered mb-0"
+                        style="min-width: 720px; table-layout: auto; white-space: nowrap;">
+
+                        <thead>
+                            <tr>
+                                <!-- Name -->
+                                <th class="text-nowrap" style="color: #ffffff; background-color: #714B67; cursor: pointer;"
+                                    t-on-click="() => this.sortTasksBy('name')">
+                                    Name
+                                    <t t-if="this.sortField === 'name'">
+                                        <i t-att-class="'fa ' + (this.sortAsc ? 'fa-sort-up' : 'fa-sort-down')" style="margin-left: 5px;"></i>
+                                    </t>
+                                </th>
+
+                                <!-- Color -->
+                                <th class="text-nowrap" style="color: #ffffff; background-color: #714B67;">Color</th>
+
+                                <!-- Description -->
+                                <th class="text-nowrap" style="color: #ffffff; background-color: #714B67; cursor: pointer;"
+                                    t-on-click="() => this.sortTasksBy('description')">
+                                    Description
+                                    <t t-if="this.sortField === 'description'">
+                                        <i t-att-class="'fa ' + (this.sortAsc ? 'fa-sort-up' : 'fa-sort-down')" style="margin-left: 5px;"></i>
+                                    </t>
+                                </th>
+
+                                <!-- Done -->
+                                <th class="text-nowrap" style="color: #ffffff; background-color: #714B67; cursor: pointer;"
+                                    t-on-click="() => this.sortTasksBy('is_done')">
+                                    Done
+                                    <t t-if="this.sortField === 'is_done'">
+                                        <i t-att-class="'fa ' + (this.sortAsc ? 'fa-sort-up' : 'fa-sort-down')" style="margin-left: 5px;"></i>
+                                    </t>
+                                </th>
+
+                                <!-- Action -->
+                                <th class="text-nowrap" style="color: #ffffff; background-color: #714B67;"></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr t-foreach="state.taskList" t-as="task" t-key="task.id">
+                                <td>
+                                    <span t-esc="task.name" />
+                                </td>
+                                <td>
+                                    <input type='color' class="form-control form-control-color" id="exampleColorInput" t-att-value="task.color" t-on-change="(e)=>this.updateColor(e,task)"/>
+                                </td>
+                                <td>
+                                    <span t-esc="task.description" />
+                                </td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" t-att-id="task.id" t-att-checked="task.is_done" t-on-change="(e)=>this.updateState(e,task)"/>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#exampleModal" t-on-click="()=>this.editTask(task)">Edit</button>
+                                    <button class="btn btn-danger" t-on-click="()=>this.deleteTask(task)">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Modal New (Create Record) -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add New Task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3 row">
+                        <label for="name" class="col-sm-2 col-form-label">Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" id="name" t-model="state.task.name" t-att-value="state.task.name"/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="color" class="col-sm-2 col-form-label">Color</label>
+                        <div class="col-sm-10">
+                            <input type="color" class="form-control form-control-color" id="color" t-model="state.task.color" t-att-value="state.task.color" title="Choose your color" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="description" class="col-sm-2 col-form-label">Description</label>
+                        <div class="col-sm-10">
+                            <textarea type="text" class="form-control" id="description" t-model="state.task.description" t-att-value="state.task.description"/>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="is_done" class="col-sm-2 col-form-label">Done</label>
+                        <div class="col-sm-10">
+                            <input type="checkbox" class="form-control-input" id="is_done" t-model="state.task.is_done" t-att-value="state.task.is_done"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" t-on-click="saveTask">Save</button>
+                </div>
+                </div>
+            </div>
+            </div>
+
+        </div>
+    </t>
+
+    <t t-name="module_javascript.TodoTask1" owl="1">
+        <div class="o_list_view o_sale_order o_view_controller o_action">
+
+            <div class="o_control_panel_main row g-3 mb-2">
+                <!-- Center: Search (8/12) -->
+                <div class="col-12 col-lg-8 d-flex justify-content-center" style="min-width:250px;">
+                    <div class="input-group w-100" style="max-width:400px;">
+                    </div>
+                </div>
+
+                <!-- Right: Pagination -->
+                <div class="col-12 col-lg-4 d-flex justify-content-end" style="min-width:200px;padding-right:15px;">
+                    <nav aria-label="Page navigation example" class="mb-2">
+                        <ul class="pagination mb-0">
+                            <li class="page-item me-2 d-flex align-items-center">
+                                <input type="number" min="1"
+                                    t-att-value="state.pageStartInput"
+                                    style="width: 50px;"
+                                    t-on-input="onPageStartInputChange"
+                                    t-on-keydown="onPageRangeKeydown" />
+                                <span>-</span>
+                                <input type="number" min="1"
+                                    t-att-value="state.pageEndInput"
+                                    style="width: 50px; margin: 0 5px;"
+                                    t-on-input="onPageEndInputChange"
+                                    t-on-keydown="onPageRangeKeydown" />
+                                <span t-esc="'/ ' + state.totalRecords"></span>
+                            </li>
+
+                            <li class="page-item" style="margin-right: 2px;">
+                                <a class="oi oi-chevron-left btn btn-secondary o_pager_previous px-2 rounded-start"
+                                    aria-label="Previous" data-tooltip="Previous" tabindex="-1"
+                                    t-on-click.prevent="goPrevPage"></a>
+                            </li>
+                            <li class="page-item">
+                                <a class="oi oi-chevron-right btn btn-secondary o_pager_next px-2 rounded-end"
+                                    aria-label="Next" data-tooltip="Next" tabindex="-1"
+                                    t-on-click="goNextPage"></a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <div class="o_control_panel_main row g-3 mb-2">
+                <div class="col-12 col-lg-8 d-flex justify-content-start" style="min-width:250px; margin-left:10%; margin-top:2%;">
+                    <div class="input-group w-100" style="max-width:400px;">
+                        <div class="mb-3 row">
+                            <UserSelector onChangeUser.bind="onChangeUser"/>
+                            <button class="btn btn-primary" t-on-click="onSearch">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="o_content">
+                <div class="table-responsive" style="max-height: 80vh; overflow-y: auto;">
+                    <table class="o_list_table table table-sm table-hover table-striped table-bordered mb-0"
+                        style="min-width: 720px; table-layout: auto; white-space: nowrap;">
+
+                        <thead>
+                            <tr>
+                                <!-- Name -->
+                                <th class="text-nowrap" style="color: #ffffff; background-color: #714B67; cursor: pointer;"
+                                    t-on-click="() => this.sortTasksBy('name')">
+                                    Name
+                                    <t t-if="this.sortField === 'name'">
+                                        <i t-att-class="'fa ' + (this.sortAsc ? 'fa-sort-up' : 'fa-sort-down')" style="margin-left: 5px;"></i>
+                                    </t>
+                                </th>
+
+                                <!-- Color -->
+                                <th class="text-nowrap" style="color: #ffffff; background-color: #714B67;">Color</th>
+
+                                <!-- Description -->
+                                <th class="text-nowrap" style="color: #ffffff; background-color: #714B67; cursor: pointer;"
+                                    t-on-click="() => this.sortTasksBy('description')">
+                                    Description
+                                    <t t-if="this.sortField === 'description'">
+                                        <i t-att-class="'fa ' + (this.sortAsc ? 'fa-sort-up' : 'fa-sort-down')" style="margin-left: 5px;"></i>
+                                    </t>
+                                </th>
+
+                                <!-- Done -->
+                                <th class="text-nowrap" style="color: #ffffff; background-color: #714B67; cursor: pointer;"
+                                    t-on-click="() => this.sortTasksBy('is_done')">
+                                    Done
+                                    <t t-if="this.sortField === 'is_done'">
+                                        <i t-att-class="'fa ' + (this.sortAsc ? 'fa-sort-up' : 'fa-sort-down')" style="margin-left: 5px;"></i>
+                                    </t>
+                                </th>
+
+                                <!-- Action -->
+                                <th class="text-nowrap" style="color: #ffffff; background-color: #714B67;"></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr t-foreach="state.taskList" t-as="task" t-key="task.id">
+                                <td>
+                                    <span t-esc="task.name" />
+                                </td>
+                                <td>
+                                    <input type='color' class="form-control form-control-color" id="exampleColorInput" t-att-value="task.color" t-on-change="(e)=>this.updateColor(e,task)"/>
+                                </td>
+                                <td>
+                                    <span t-esc="task.description" />
+                                </td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" t-att-id="task.id" t-att-checked="task.is_done" t-on-change="(e)=>this.updateState(e,task)"/>
+                                    </div>
+                                </td>
+                                <td>
+                                    <button class="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#exampleModal" t-on-click="()=>this.editTask(task)">Edit</button>
+                                    <button class="btn btn-danger" t-on-click="()=>this.deleteTask(task)">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </t>
+
+</template>

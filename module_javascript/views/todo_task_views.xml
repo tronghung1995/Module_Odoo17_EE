@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Tree View -->
+    <record id="todo_task_tree_view" model="ir.ui.view">
+        <field name="name">Todo Task Tree View</field>
+        <field name="model">todo.task</field>
+        <field name="arch" type="xml">
+            <tree string="Todo Task Tree">
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="color" widget="color"/>
+                <field name="description"/>
+                <field name="is_done"  widget="boolean_toggle"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="todo_task_form_view" model="ir.ui.view">
+        <field name="name">Todo Task Form View</field>
+        <field name="model">todo.task</field>
+        <field name="arch" type="xml">
+            <form string="Todo Task Form">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="user_id"/>
+                        <field name="color" widget="color"/>
+                        <field name="description"/>
+                        <field name="is_done"  widget="boolean_toggle"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_todo_task" model="ir.actions.client">
+        <field name="name">Todo Task</field>
+        <field name="tag">module_javascript.action_todo_task</field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_todo_task1" model="ir.actions.client">
+        <field name="name">Todo Task 1</field>
+        <field name="tag">module_javascript.action_todo_task1</field>
+    </record>
+
+    <!-- Menu (Tùy chọn) -->
+    <menuitem id="menu_owl_javascript" 
+        name="OWL (Javascript)" 
+        web_icon="module_javascript,static/description/js.png"/>
+
+    <menuitem id="menu_owl_javascript_child"
+        parent="menu_owl_javascript"
+        name="Todo Tasks Table" 
+        action="action_todo_task"/>
+
+    <menuitem id="menu_owl_javascript_child2"
+        parent="menu_owl_javascript"
+        name="Todo Tasks Query" 
+        action="action_todo_task1"/>
+
+</odoo>
