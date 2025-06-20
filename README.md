@@ -14,5 +14,6 @@
 
 2. Khởi động lại server Odoo và bắt đầu cài đặt module:
 - Cài đặt trên giao diện Odoo Apps.
-- Cài đặt bằng lệnh này: python3 ./odoo-bin -c /home/hung/source_odoo17/odoo.conf -d odoo17 -i module_javascript (Thay đổi đường dẫn tới file cấu hình odoo, tên database)
+- Cài đặt bằng lệnh: python3 ./odoo-bin -c /home/hung/source_odoo17/odoo.conf -d odoo17 -i module_javascript --stop-after-init (Thay đổi đường dẫn tới file cấu hình odoo, tên database)
 -> Cài đặt hoàn tất sẽ xuất hiện phân hệ như hình ![image](https://github.com/user-attachments/assets/7bd37087-e823-45fb-b768-46cdb05c82d7)
+
