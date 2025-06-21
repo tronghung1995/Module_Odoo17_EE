@@ -12,21 +12,20 @@ export class ChartComponent extends Component {
     setup() {
         this.rpc = useService("rpc");
         this.canvasRef = useRef("chartCanvas");
+        this.canvasRefDone = useRef("chartCanvasDone");
+        this.canvasRefNotDone = useRef("chartCanvasNotDone");
 
         onMounted(async () => {
             const data = await this.rpc('/module_javascript/read_group_chart_data');
 
-            const title_column = data.map(item => String(item.is_done));
-            const countList = data.map(item => parseInt(item.is_done_count));
-
             const ctx = this.canvasRef.el.getContext("2d");
             new Chart(ctx, {
-                type: "pie",
+                type: "doughnut",
                 data: {
-                    labels: title_column,
+                    labels: data.doughnut_chart.labels,
                     datasets: [{
-                        label: "Votes",
-                        data: countList,
+                        label: "Quantity",
+                        data: data.doughnut_chart.data,
                         backgroundColor: ["Red", "Blue"],
                         borderWidth: 1,
                     }],
@@ -40,11 +39,84 @@ export class ChartComponent extends Component {
                         },
                         title: {
                             display: true,
-                            text: 'Chart.js Pie Chart'
+                            text: 'Total Tasks'
                         }
                     }
                 },
             });
+
+            const ctxDone = this.canvasRefDone.el.getContext("2d");
+            new Chart(ctxDone, {
+                type: "bar",
+                data: {
+                    labels: data.bar_chart_done.labels,
+                    datasets: [{
+                        label: "Quantity",
+                        data: data.bar_chart_done.data,
+                        backgroundColor: ["Red", "Blue"],
+                        borderWidth: 1,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        title: {
+                            display: true,
+                            text: 'Task Done'
+                        }
+                    },
+                    scales: {
+                        y: { // trục Y
+                            ticks: {
+                                callback: function(value) {
+                                    return Number.isInteger(value) ? value : ''; // Chỉ hiển thị số nguyên
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            const ctxNotDone = this.canvasRefNotDone.el.getContext("2d");
+            new Chart(ctxNotDone, {
+                type: "bar",
+                data: {
+                    labels: data.bar_chart_not_done.labels,
+                    datasets: [{
+                        label: "Quantity",
+                        data: data.bar_chart_not_done.data,
+                        backgroundColor: ["Red", "Blue"],
+                        borderWidth: 1,
+                    }],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false,
+                        },
+                        title: {
+                            display: true,
+                            text: 'Task Not Done'
+                        }
+                    },
+                    scales: {
+                        y: { // trục Y
+                            ticks: {
+                                callback: function(value) {
+                                    return Number.isInteger(value) ? value : ''; // Chỉ hiển thị số nguyên
+                                }
+                            }
+                        }
+                    }
+                },
+            });
+
         });
     }
 }
